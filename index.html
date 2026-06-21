@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ตัวสร้าง Prompt ภาพ + วิดีโอ ไม่ใช้ API</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Noto+Sans+Thai:wght@400;600;700;800&display=swap');
+body{font-family:'Inter','Noto Sans Thai',sans-serif;background:linear-gradient(135deg,#f8fafc,#eef2ff)}
+textarea::-webkit-scrollbar{width:8px}textarea::-webkit-scrollbar-track{background:#e2e8f0;border-radius:10px}textarea::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:10px}.image-preview{max-width:100%;max-height:210px;object-fit:contain;border-radius:1rem;margin-top:1rem}.card{box-shadow:0 18px 45px rgba(15,23,42,.12)}
+</style>
+</head>
+<body class="min-h-screen p-4">
+<div class="max-w-5xl mx-auto bg-white rounded-3xl card p-5 md:p-8 my-4">
+  <div class="text-center mb-6">
+    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-50 text-indigo-700 font-semibold text-sm mb-3">ไม่ใช้ API • ใช้ได้บน GitHub Pages • ไม่มี Secret</div>
+    <h1 class="text-3xl md:text-4xl font-extrabold text-slate-800">AI Prompt Studio By Naam</h1>
+    <p class="text-slate-500 mt-2">สร้าง Image Prompt + Video Prompt แบบแยกฉาก สำหรับ Google Flow / Veo / Gemini โดยไม่ต้องใส่ API Key</p>
+  </div>
+
+  <div class="grid md:grid-cols-2 gap-4 mb-5">
+    <div>
+      <label class="font-bold text-slate-700 mb-2 block">ไอเดียเริ่มต้น / ชื่อเรื่อง</label>
+      <textarea id="idea" class="w-full min-h-[135px] p-4 border-2 border-slate-200 rounded-2xl focus:outline-none focus:border-indigo-500 resize-none" placeholder="เช่น ลุงกันกับป้าเที่ยวพาเที่ยวสวนสัตว์เขาเขียว"></textarea>
+    </div>
+    <div>
+      <label class="font-bold text-slate-700 mb-2 block">Character Lock / รายละเอียดตัวละคร</label>
+      <textarea id="character" class="w-full min-h-[135px] p-4 border-2 border-slate-200 rounded-2xl focus:outline-none focus:border-indigo-500 resize-none" placeholder="เช่น ลุงกัน: ชายไทยวัยผู้ใหญ่ เสื้อโปโลเขียวเข้ม หมวกซาฟารี...&#10;ป้าเที่ยว: หญิงไทยวัยผู้ใหญ่ เสื้อสี..."></textarea>
+    </div>
+  </div>
+
+  <div class="grid md:grid-cols-2 gap-4 mb-5">
+    <div>
+      <label class="font-bold text-slate-700 mb-2 block">สถานที่ / ฉากหลัก</label>
+      <input id="location" class="w-full p-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-indigo-500" placeholder="เช่น สวนสัตว์เขาเขียว จังหวัดชลบุรี" />
+    </div>
+    <div>
+      <label class="font-bold text-slate-700 mb-2 block">บทพูดหลัก / โทนคำพูด</label>
+      <input id="dialogue" class="w-full p-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-indigo-500" placeholder="เช่น วันนี้พาเที่ยวกันแบบสนุก ๆ นะคะ" />
+    </div>
+  </div>
+
+  <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 mb-5">
+    <h2 class="text-lg font-extrabold text-slate-800 mb-4">ตัวเลือกการสร้าง</h2>
+    <div class="grid md:grid-cols-4 gap-4">
+      <div>
+        <label class="font-semibold text-slate-600 mb-1 block">แนวคอนเทนต์</label>
+        <select id="genre" class="w-full p-3 border-2 border-slate-200 rounded-xl bg-white">
+          <option value="travel">แนวท่องเที่ยว</option>
+          <option value="cooking">แนวทำอาหาร</option>
+          <option value="anime">แนวอนิเมะ</option>
+          <option value="realistic">แนวภาพเสมือนจริง</option>
+        </select>
+      </div>
+      <div>
+        <label class="font-semibold text-slate-600 mb-1 block">จำนวนฉาก</label>
+        <input id="sceneCount" type="number" min="1" max="20" value="10" class="w-full p-3 border-2 border-slate-200 rounded-xl" />
+      </div>
+      <div>
+        <label class="font-semibold text-slate-600 mb-1 block">ภาษา Prompt</label>
+        <select id="lang" class="w-full p-3 border-2 border-slate-200 rounded-xl bg-white">
+          <option value="flow">Flow: English + Thai dialogue</option>
+          <option value="thai">Gemini: ภาษาไทย</option>
+        </select>
+      </div>
+      <div>
+        <label class="font-semibold text-slate-600 mb-1 block">สไตล์กล้อง</label>
+        <select id="camera" class="w-full p-3 border-2 border-slate-200 rounded-xl bg-white">
+          <option value="Handheld vlog style">Handheld vlog style</option>
+          <option value="Cinematic">Cinematic</option>
+          <option value="Documentary">Documentary</option>
+          <option value="Commercial">Commercial</option>
+          <option value="Slow cinematic tracking shot">Slow tracking</option>
+          <option value="POV camera movement">POV</option>
+        </select>
+      </div>
+    </div>
+    <div class="grid md:grid-cols-3 gap-4 mt-4">
+      <label class="flex items-center gap-2 text-slate-700"><input id="noText" type="checkbox" checked class="w-5 h-5 accent-indigo-600"> ไม่เอาข้อความ/ซับ/โลโก้ในภาพ</label>
+      <label class="flex items-center gap-2 text-slate-700"><input id="vertical" type="checkbox" checked class="w-5 h-5 accent-indigo-600"> แนวตั้ง 9:16</label>
+      <label class="flex items-center gap-2 text-slate-700"><input id="voice" type="checkbox" checked class="w-5 h-5 accent-indigo-600"> ใส่ Thai Voice Prompt</label>
+    </div>
+  </div>
+
+  <div class="flex flex-col md:flex-row gap-3 justify-center mb-6">
+    <button id="generate" class="bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold py-3 px-6 rounded-2xl shadow-lg">สร้าง Image + Video Prompt</button>
+    <button id="copyAll" class="hidden bg-slate-700 hover:bg-slate-800 text-white font-bold py-3 px-5 rounded-2xl">คัดลอกทั้งหมด</button>
+    <button id="saveTxt" class="hidden bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-5 rounded-2xl">บันทึก .txt</button>
+    <button id="clear" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-3 px-5 rounded-2xl">ล้างผลลัพธ์</button>
+  </div>
+
+  <div class="mb-4 p-4 rounded-2xl bg-amber-50 border border-amber-200 text-amber-800">
+    <b>หมายเหตุ:</b> เวอร์ชันนี้ไม่ใช้ AI API จึงไม่ขยายไอเดียอัตโนมัติแบบ Gemini แต่จะสร้าง Prompt จาก Template ที่วางไว้ ทำให้เอาขึ้น GitHub Pages ได้โดยไม่โดนเตือน Secret ค่ะ
+  </div>
+
+  <div id="output" class="space-y-5"></div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const templates = {
+  travel: {
+    label:'Travel vlog', style:'warm 3D Pixar travel vlog style, realistic real location, bright natural daylight, cheerful wholesome mood',
+    scenes:['opening arrival at the entrance','walking and introducing the place','discovering the first highlight spot','interacting with the environment happily','trying local food or snack','walking through a scenic pathway','taking photos together','enjoying a peaceful viewpoint','golden hour travel moment','farewell ending and waving goodbye'],
+    motion:['walk into frame and wave','point at the location and smile','look around with excitement','laugh and react naturally','taste food and show happy expression','walk side by side','pose for a photo','look at the view calmly','walk slowly under warm light','wave goodbye to camera'],
+    env:['people and travel atmosphere in background','real location details and natural movement','trees, signs, and visitors moving softly','ambient activity around the attraction','food stall steam and crowd ambience','greenery moving gently in the wind','camera flash feeling and travel mood','wide scenic background','sunset glow and soft breeze','ending atmosphere with warm light'],
+    voice:'Thai friendly travel vlog voice, warm, clear, cheerful, natural pacing'
+  },
+  cooking: {
+    label:'Cozy cooking', style:'cozy cinematic cooking style, warm kitchen light, detailed ingredients, appetizing food textures, wholesome mood',
+    scenes:['opening in a warm kitchen','showing ingredients on the table','washing and preparing ingredients','cutting or mixing ingredients','cooking on stove or pan','adding seasoning dramatically','close up of food texture','plating the dish beautifully','tasting the finished dish','happy ending in the kitchen'],
+    motion:['stand beside the counter and greet viewers','point at fresh ingredients','wash and prepare ingredients carefully','chop and mix with focused expression','stir or cook with steam rising','add seasoning with excitement','lean closer to smell the food','decorate the plate neatly','taste and smile happily','wave goodbye while holding the dish'],
+    env:['warm kitchen background','wooden table filled with ingredients','water droplets and kitchen ambience','knife sounds and small ingredient movement','steam and sizzling movement','aroma steam and warm light','macro food detail','beautiful plated dish on table','cozy dining corner','calm kitchen after cooking'],
+    voice:'Thai cozy cooking voice, friendly, clear, cute, inviting, not too fast'
+  },
+  anime: {
+    label:'Anime cozy life', style:'3D anime cozy life style, soft pastel lighting, expressive cute character, cinematic anime composition, warm wholesome mood',
+    scenes:['soft opening in a cozy room','character introduces the idea','preparing cute props or ingredients','small funny moment','main action begins','heartwarming interaction','close up emotional detail','beautiful cinematic key moment','successful happy moment','soft farewell ending'],
+    motion:['smile gently and wave','speak happily to camera','prepare items with cute careful movements','react with surprised cute expression','move with energetic anime timing','laugh softly with companion','look at the detail with sparkling eyes','turn toward warm light','celebrate with happy pose','wave goodbye sweetly'],
+    env:['cozy anime room background','soft sunlight through window','small cute objects moving slightly','gentle comedy atmosphere','smooth anime motion blur','warm emotional ambience','sparkle and soft depth of field','cinematic pastel background','bright cozy success mood','golden soft ending light'],
+    voice:'Thai cute anime voice, soft, bright, wholesome, gentle emotional tone'
+  },
+  realistic: {
+    label:'Photorealistic cinematic', style:'photorealistic cinematic style, natural light, realistic textures, shallow depth of field, ultra detailed, authentic atmosphere',
+    scenes:['realistic establishing shot','character enters the scene','observing the main subject','natural interaction moment','detailed close-up action','environmental movement moment','emotional medium shot','wide cinematic scene','golden light highlight','realistic closing shot'],
+    motion:['enter frame naturally','turn to camera with gentle expression','observe the scene carefully','interact naturally with the subject','perform the main action with realistic motion','walk through the environment','smile softly with emotion','stand in wide composition','move slowly through golden light','look at camera and wave calmly'],
+    env:['realistic background ambience','natural shadows and real-world details','subtle wind and background movement','authentic daily-life activity','macro detail and real texture','real location atmosphere','soft realistic soundscape','wide real environment','golden hour light and dust particles','calm closing ambience'],
+    voice:'Thai natural documentary voice, warm, clear, realistic, calm pacing'
+  }
+};
+function esc(s){return (s||'').trim();}
+function sceneName(base,i){return base[i] || `custom story moment ${i+1}`;}
+function buildDialogue(i, main){
+  const d = esc(main);
+  if(d) return d;
+  const defaults = ['เริ่มกันเลยค่ะ','ตรงนี้น่าสนใจมาก','น่ารักมากเลย','มุมนี้สวยมาก','ห้ามพลาดเลยนะคะ','บรรยากาศดีมาก','ขอเก็บภาพสักหน่อย','ประทับใจมากค่ะ','วันนี้สนุกมาก','ฝากติดตามตอนต่อไปนะคะ'];
+  return defaults[i] || 'ไปต่อกันเลยค่ะ';
+}
+function buildImagePrompt(o,i){
+  const t = templates[o.genre];
+  const aspect = o.vertical ? 'vertical 9:16' : 'cinematic 16:9';
+  const noText = o.noText ? ', no text, no subtitle, no logo, no watermark' : '';
+  if(o.lang==='thai'){
+    return `IMAGE PROMPT:\nฉากที่ ${i+1}: ${sceneName(t.scenes,i)}\nภาพ keyframe ที่สอดคล้องกับวิดีโอ: ${o.idea || 'เรื่องราวหลัก'} ที่ ${o.location || 'สถานที่ตามเรื่อง'} ตัวละครอยู่ในเฟรมและทำท่า ${t.motion[i] || t.motion[0]} สีหน้าอบอุ่น สดใส ฉากหลังมี ${t.env[i] || t.env[0]} รายละเอียดตัวละครต้องเหมือนเดิมทุกฉาก: ${o.character || 'คงหน้าตา เสื้อผ้า สีผม ทรงผม และอุปกรณ์เดิมทุกฉาก'} แสงและอารมณ์: ${t.style}, มุมกล้อง ${o.camera}, ultra detailed, 8K, ${aspect}${noText}`;
+  }
+  return `IMAGE PROMPT:\nScene ${i+1}: ${sceneName(t.scenes,i)}. Keyframe image consistent with the video scene: ${o.idea || 'main story'} at ${o.location || 'the story location'}. The characters are clearly visible in frame, performing this action: ${t.motion[i] || t.motion[0]}. Facial expression: warm, cheerful, natural. Background/environment: ${t.env[i] || t.env[0]}. Character continuity lock: ${o.character || 'keep the same face, hairstyle, outfit, body proportions, accessories, and color palette in every scene'}. Lighting and mood: ${t.style}. Camera: ${o.camera}. ultra detailed, 8K, ${aspect}${noText}`;
+}
+function buildVideoPrompt(o,i){
+  const t = templates[o.genre];
+  const dialogue = buildDialogue(i,o.dialogue);
+  const aspect = o.vertical ? 'Vertical 9:16' : 'Cinematic 16:9';
+  const noText = o.noText ? '\nNegative: no text, no subtitle, no logo, no watermark, no distorted face, no wrong outfit, no extra fingers, no inconsistent character' : '';
+  const voiceLine = o.voice ? `\nThai Voice Prompt: ${t.voice}` : '';
+  if(o.lang==='thai'){
+    return `VIDEO PROMPT:\nฉากที่ ${i+1}: ${sceneName(t.scenes,i)}\nDuration: 8 seconds\nCharacter Movement: ${t.motion[i] || t.motion[0]}\nFacial Expression: อบอุ่น สดใส เป็นธรรมชาติ\nEnvironment Movement: ${t.env[i] || t.env[0]}\nCamera Movement: ${o.camera}, smooth natural motion, end with wide shot if next scene continues\nLighting: ${t.style}\nMood: wholesome, cinematic, consistent with the Image Prompt\nCharacter Lock: ${o.character || 'คงตัวละครเดิมทุกฉาก ทั้งใบหน้า ชุด สีผม รูปร่าง และอุปกรณ์'}\nพูดด้วยภาษาไทย: "${dialogue}"${voiceLine}\nFormat: ${aspect}${noText}`;
+  }
+  return `VIDEO PROMPT:\nScene ${i+1}: ${sceneName(t.scenes,i)}\nDuration: exactly 8 seconds\nCharacter Movement: ${t.motion[i] || t.motion[0]}\nFacial Expression: warm, cheerful, natural\nEnvironment Movement: ${t.env[i] || t.env[0]}\nCamera Movement: ${o.camera}, smooth natural motion, end with a wide shot if the next scene continues\nLighting: ${t.style}\nMood: wholesome, cinematic, consistent with the Image Prompt\nCharacter Lock: ${o.character || 'keep the same characters, face, hairstyle, clothing, body proportions, accessories, and color palette in every scene'}\nSpeak Thai: "${dialogue}"${voiceLine}\nFormat: ${aspect}${noText}`;
+}
+function copyText(text,btn){navigator.clipboard.writeText(text).then(()=>{const old=btn.textContent;btn.textContent='คัดลอกแล้ว!';setTimeout(()=>btn.textContent=old,1600);});}
+function getOptions(){return {idea:esc($('idea').value),character:esc($('character').value),location:esc($('location').value),dialogue:esc($('dialogue').value),genre:$('genre').value,sceneCount:Math.max(1,Math.min(20,parseInt($('sceneCount').value||10))),lang:$('lang').value,camera:$('camera').value,noText:$('noText').checked,vertical:$('vertical').checked,voice:$('voice').checked};}
+function generate(){
+  const o=getOptions(); const out=$('output'); out.innerHTML='';
+  const all=[];
+  for(let i=0;i<o.sceneCount;i++){
+    const img=buildImagePrompt(o,i); const vid=buildVideoPrompt(o,i); all.push(`SCENE ${i+1}\n\n${img}\n\n${vid}`);
+    const div=document.createElement('div'); div.className='bg-slate-50 border-2 border-slate-200 rounded-3xl p-4';
+    div.innerHTML=`<h3 class="text-xl font-extrabold text-slate-800 mb-3">SCENE ${i+1}</h3><label class="font-bold text-indigo-700">Image Prompt</label><textarea class="img w-full min-h-[180px] p-3 mt-2 mb-3 rounded-2xl border border-slate-200 bg-white resize-none">${img}</textarea><div class="flex gap-2 mb-4"><button class="copyImg bg-indigo-100 text-indigo-800 px-4 py-2 rounded-xl font-bold">คัดลอกภาพ</button></div><label class="font-bold text-purple-700">Video Prompt</label><textarea class="vid w-full min-h-[230px] p-3 mt-2 mb-3 rounded-2xl border border-slate-200 bg-white resize-none">${vid}</textarea><div class="flex flex-col md:flex-row gap-2"><button class="copyVid bg-purple-100 text-purple-800 px-4 py-2 rounded-xl font-bold">คัดลอกวิดีโอ</button><button class="copyScene bg-slate-700 text-white px-4 py-2 rounded-xl font-bold">คัดลอกทั้งฉาก</button></div>`;
+    out.appendChild(div);
+    const imgTa=div.querySelector('.img'), vidTa=div.querySelector('.vid');
+    div.querySelector('.copyImg').onclick=e=>copyText(imgTa.value,e.target);
+    div.querySelector('.copyVid').onclick=e=>copyText(vidTa.value,e.target);
+    div.querySelector('.copyScene').onclick=e=>copyText(imgTa.value+'\n\n'+vidTa.value,e.target);
+  }
+  $('copyAll').classList.remove('hidden'); $('saveTxt').classList.remove('hidden');
+  window.generatedText=all.join('\n\n---\n\n');
+}
+$('generate').onclick=generate;
+$('copyAll').onclick=e=>copyText(window.generatedText||'',e.target);
+$('saveTxt').onclick=()=>{const blob=new Blob([window.generatedText||''],{type:'text/plain;charset=utf-8'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='image-video-prompts-no-api.txt';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(a.href);};
+$('clear').onclick=()=>{$('output').innerHTML='';$('copyAll').classList.add('hidden');$('saveTxt').classList.add('hidden');window.generatedText='';};
+</script>
+</body>
+</html>
